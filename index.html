@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h3>Websockets</h3>
+    <div>
+        <input type="text" placeholder="Enter Your Message Here" id="message-input" />
+        <button id="message-send-button">Send</button>
+        <ul id="messages-container"></ul>
+    </div>
+    <script>
+        const messageInput = document.getElementById('message-input');
+        const messageSendButton = document.getElementById('message-send-button');
+        const messagesContainer = document.getElementById('messages-container');
+
+        const { port } = window.location;
+        const connection = new WebSocket(`ws://localhost:${port}`)
+        connection.onopen = () => {
+            messageSendButton.addEventListener('click', (event) => {
+                const message = messageInput.value;
+                if(message != '') {
+                    connection.send(JSON.stringify(message));
+                }
+            })
+            // connection.send('ping, hllo from client');
+            connection.onmessage = (message) => {
+                console.log(message);
+                const rawData = message.data;
+                const parsedData = JSON.parse(rawData)
+                const text = parsedData;
+
+                const li = document.createElement('li');
+                li.innerText = text;
+                messagesContainer.appendChild(li);
+            }
+        }
+    </script>
+</body>
+</html>
